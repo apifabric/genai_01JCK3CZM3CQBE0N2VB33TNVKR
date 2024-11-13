@@ -1,0 +1,227 @@
+about:
+  date: November 13, 2024 15:49:29
+  recent_changes: works with modified safrs-react-admin
+  version: 0.0.0
+api_root: '{http_type}://{swagger_host}:{port}/{api}'
+authentication: '{system-default}'
+info:
+  number_relationships: 7
+  number_tables: 7
+info_toggle_checked: true
+resources:
+  Candidate:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: platform_id
+    - name: gender
+    - name: age
+    - name: id
+    description: Represents dating candidates from various platforms.
+    info_list: Represents dating candidates from various platforms.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - candidate_id
+      name: FavoriteList
+      resource: Favorite
+    - direction: tomany
+      fks:
+      - candidate_id
+      name: InteractionList
+      resource: Interaction
+    - direction: toone
+      fks:
+      - platform_id
+      name: platform
+      resource: DatingPlatform
+    type: Candidate
+    user_key: name
+  DatingPlatform:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: url
+    - name: id
+    description: Stores information about different dating platforms.
+    info_list: Stores information about different dating platforms.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - platform_id
+      name: CandidateList
+      resource: Candidate
+    type: DatingPlatform
+    user_key: name
+  Favorite:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: candidate_id
+    - name: user_id
+    - name: notes
+    - name: added_date
+      type: DATETIME
+    description: Represents favorite candidates for each user.
+    info_list: Represents favorite candidates for each user.
+    tab_groups:
+    - direction: toone
+      fks:
+      - candidate_id
+      name: candidate
+      resource: Candidate
+    - direction: toone
+      fks:
+      - user_id
+      name: user
+      resource: User
+    type: Favorite
+    user_key: id
+  Interaction:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: candidate_id
+    - name: user_id
+    - name: interaction_date
+      type: DATETIME
+    - name: online
+      required: true
+      type: Boolean
+    - name: notes
+    description: Tracks all interactions between users and candidates.
+    info_list: Tracks all interactions between users and candidates.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - interaction_id
+      name: VisitList
+      resource: Visit
+    - direction: toone
+      fks:
+      - candidate_id
+      name: candidate
+      resource: Candidate
+    - direction: toone
+      fks:
+      - user_id
+      name: user
+      resource: User
+    type: Interaction
+    user_key: id
+  Place:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: Type
+      required: true
+    - name: address
+    - name: id
+    description: Represents places visited during interactions.
+    info_list: Represents places visited during interactions.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - place_id
+      name: VisitList
+      resource: Visit
+    type: Place
+    user_key: name
+  User:
+    attributes:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+    - name: email
+      required: true
+    - name: date_of_birth
+      type: DATE
+    - name: gender
+    - name: id
+    description: Stores user information from the dating platform.
+    info_list: Stores user information from the dating platform.
+    tab_groups:
+    - direction: tomany
+      fks:
+      - user_id
+      name: FavoriteList
+      resource: Favorite
+    - direction: tomany
+      fks:
+      - user_id
+      name: InteractionList
+      resource: Interaction
+    type: User
+    user_key: name
+  Visit:
+    attributes:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+    - name: interaction_id
+    - name: place_id
+    - name: visit_date
+      type: DATETIME
+    - name: score
+    description: Records details of the places visited during interactions.
+    info_list: Records details of the places visited during interactions.
+    tab_groups:
+    - direction: toone
+      fks:
+      - interaction_id
+      name: interaction
+      resource: Interaction
+    - direction: toone
+      fks:
+      - place_id
+      name: place
+      resource: Place
+    type: Visit
+    user_key: id
+settings:
+  HomeJS: /admin-app/home.js
+  max_list_columns: 8
+  style_guide:
+    applicationLocales:
+    - en
+    - es
+    currency_symbol: $
+    currency_symbol_position: left
+    date_format: LL
+    decimal_max: '1000000000'
+    decimal_min: '0'
+    decimal_separator: .
+    detail_mode: tab
+    edit_on_mode: dblclick
+    exclude_listpicker: false
+    include_translation: 'false'
+    keycloak_client_id: alsclient
+    keycloak_realm: kcals
+    keycloak_url: http://localhost:8080
+    locale: en
+    max_decimal_digits: '4'
+    min_decimal_digits: '2'
+    new_mode: dialog
+    pick_style: list
+    row_height: small,
+    serviceType: OntimizeEE
+    startSessionPath: /auth/login
+    style: light
+    thousand_separator: ','
+    use_keycloak: 'false'

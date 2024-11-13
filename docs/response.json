@@ -1,0 +1,62 @@
+{
+    "models": [
+        {
+            "classname": "User",
+            "code": "class User(Base):\n    \"\"\"description: Stores user information from the dating platform.\"\"\"\n\n    __tablename__ = 'user'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    email = Column(String, nullable=False)\n    date_of_birth = Column(Date, nullable=True)\n    gender = Column(String, nullable=True)",
+            "description": "Stores user information from the dating platform.",
+            "name": "User"
+        },
+        {
+            "classname": "DatingPlatform",
+            "code": "class DatingPlatform(Base):\n    \"\"\"description: Stores information about different dating platforms.\"\"\"\n\n    __tablename__ = 'dating_platform'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    url = Column(String, nullable=True)",
+            "description": "Stores information about different dating platforms.",
+            "name": "DatingPlatform"
+        },
+        {
+            "classname": "Candidate",
+            "code": "class Candidate(Base):\n    \"\"\"description: Represents dating candidates from various platforms.\"\"\"\n\n    __tablename__ = 'candidate'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    platform_id = Column(Integer, ForeignKey('dating_platform.id'))\n    gender = Column(String, nullable=True)\n    age = Column(Integer, nullable=True)\n",
+            "description": "Represents dating candidates from various platforms.",
+            "name": "Candidate"
+        },
+        {
+            "classname": "Favorite",
+            "code": "class Favorite(Base):\n    \"\"\"description: Represents favorite candidates for each user.\"\"\"\n\n    __tablename__ = 'favorite'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    user_id = Column(Integer, ForeignKey('user.id'))\n    candidate_id = Column(Integer, ForeignKey('candidate.id'))\n    notes = Column(String, nullable=True)\n    added_date = Column(DateTime, nullable=True)",
+            "description": "Represents favorite candidates for each user.",
+            "name": "Favorite"
+        },
+        {
+            "classname": "Interaction",
+            "code": "class Interaction(Base):\n    \"\"\"description: Tracks all interactions between users and candidates.\"\"\"\n\n    __tablename__ = 'interaction'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    user_id = Column(Integer, ForeignKey('user.id'))\n    candidate_id = Column(Integer, ForeignKey('candidate.id'))\n    interaction_date = Column(DateTime, nullable=True)\n    online = Column(Boolean, nullable=False, default=True)\n    notes = Column(String, nullable=True)",
+            "description": "Tracks all interactions between users and candidates.",
+            "name": "Interaction"
+        },
+        {
+            "classname": "Place",
+            "code": "class Place(Base):\n    \"\"\"description: Represents places visited during interactions.\"\"\"\n\n    __tablename__ = 'place'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    name = Column(String, nullable=False)\n    type = Column(String, nullable=False)  # e.g., 'coffee shop', 'restaurant'\n    address = Column(String, nullable=True)",
+            "description": "Represents places visited during interactions.",
+            "name": "Place"
+        },
+        {
+            "classname": "Visit",
+            "code": "class Visit(Base):\n    \"\"\"description: Records details of the places visited during interactions.\"\"\"\n\n    __tablename__ = 'visit'\n    \n    id = Column(Integer, primary_key=True, autoincrement=True)\n    interaction_id = Column(Integer, ForeignKey('interaction.id'))\n    place_id = Column(Integer, ForeignKey('place.id'))\n    visit_date = Column(DateTime, nullable=True)\n    score = Column(Integer, nullable=True)  # User's score for the visit",
+            "description": "Records details of the places visited during interactions.",
+            "name": "Visit"
+        }
+    ],
+    "rules": [
+        {
+            "name": "User Age Validation",
+            "description": "Ensure users are at least 18 years old.",
+            "use_case": "Validate user age during registration or profile update.",
+            "code": "Rule.constraint(\n    validate=User,\n    as_condition=lambda row: row.date_of_birth is not None and (date.today() - row.date_of_birth).days / 365 >= 18,\n    error_msg=\"User must be at least 18 years old\"\n)"
+        },
+        {
+            "name": "Candidate Interaction Count",
+            "description": "Tracks and limits the number of unique interactions a user can have with a candidate, e.g., maximum of 5 interactions.",
+            "use_case": "Prevent unlimited interactions with the same candidate.",
+            "code": "Rule.count(derive=Candidate.interaction_count, as_count_of=Interaction)\nRule.constraint(\n    validate=Candidate,\n    as_condition=lambda row: row.interaction_count <= 5,\n    error_msg=\"Too many interactions with the candidate\"\n)"
+        }
+    ],
+    "test_data": "from datetime import date, datetime\n\n# Users\nuser1 = User(name=\"John Doe\", email=\"john.doe@example.com\", date_of_birth=date(1990, 5, 21), gender=\"Male\")\nuser2 = User(name=\"Jane Smith\", email=\"jane.smith@example.com\", date_of_birth=date(1985, 8, 15), gender=\"Female\")\nuser3 = User(name=\"Alice Johnson\", email=\"alice.j@example.com\", date_of_birth=date(1993, 2, 3), gender=\"Female\")\nuser4 = User(name=\"Bob Brown\", email=\"bob.brown@example.com\", date_of_birth=date(1987, 7, 25), gender=\"Male\")\n\n# Dating Platforms\nplatform1 = DatingPlatform(name=\"Tinder\", url=\"https://www.tinder.com\")\nplatform2 = DatingPlatform(name=\"Match.com\", url=\"https://www.match.com\")\nplatform3 = DatingPlatform(name=\"Bumble\", url=\"https://www.bumble.com\")\nplatform4 = DatingPlatform(name=\"OkCupid\", url=\"https://www.okcupid.com\")\n\n# Candidates\ncandidate1 = Candidate(name=\"Chloe Green\", platform_id=1, gender=\"Female\", age=28)\ncandidate2 = Candidate(name=\"Emily White\", platform_id=2, gender=\"Female\", age=30)\ncandidate3 = Candidate(name=\"Michael Black\", platform_id=1, gender=\"Male\", age=31)\ncandidate4 = Candidate(name=\"Daniel Blue\", platform_id=2, gender=\"Male\", age=29)\n\n# Favorites\nfavorite1 = Favorite(user_id=1, candidate_id=1, notes=\"Met at a Caf\u00e9\", added_date=datetime(2023, 8, 4))\nfavorite2 = Favorite(user_id=1, candidate_id=2, notes=\"Good match on interests\", added_date=datetime(2023, 8, 12))\nfavorite3 = Favorite(user_id=2, candidate_id=3, notes=\"Love for adventure\", added_date=datetime(2023, 8, 8))\nfavorite4 = Favorite(user_id=3, candidate_id=4, notes=\"Great conversation\", added_date=datetime(2023, 8, 15))\n\n# Interactions\ninteraction1 = Interaction(user_id=1, candidate_id=1, interaction_date=datetime(2023, 8, 4), online=True, notes=\"Video call\")\ninteraction2 = Interaction(user_id=1, candidate_id=2, interaction_date=datetime(2023, 8, 11), online=False, notes=\"Dinner date\")\ninteraction3 = Interaction(user_id=2, candidate_id=1, interaction_date=datetime(2023, 8, 9), online=True, notes=\"Chat\")\ninteraction4 = Interaction(user_id=3, candidate_id=3, interaction_date=datetime(2023, 8, 14), online=False, notes=\"Met at a park\")\n\n# Places\nplace1 = Place(name=\"Starbucks\", type=\"Coffee shop\", address=\"123 Main St\")\nplace2 = Place(name=\"Olive Garden\", type=\"Restaurant\", address=\"456 Broadway Ave\")\nplace3 = Place(name=\"Blue Bottle Coffee\", type=\"Coffee shop\", address=\"789 Cherry Ln\")\nplace4 = Place(name=\"The Cheesecake Factory\", type=\"Restaurant\", address=\"101 Ocean Blvd\")\n\n# Visits\nvisit1 = Visit(interaction_id=2, place_id=2, visit_date=datetime(2023, 8, 11), score=8)\nvisit2 = Visit(interaction_id=4, place_id=1, visit_date=datetime(2023, 8, 14), score=7)\nvisit3 = Visit(interaction_id=1, place_id=3, visit_date=datetime(2023, 8, 4), score=5)\nvisit4 = Visit(interaction_id=3, place_id=1, visit_date=datetime(2023, 8, 9), score=6)",
+    "name": "DateMaster"
+}

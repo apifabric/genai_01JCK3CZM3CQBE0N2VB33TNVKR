@@ -1,0 +1,1 @@
+create a database application for integrating information from multiple dating websites (such as Tinder and Match.com).  the tables will hold favorites that any user can store and lists all interactions both online and in person with all candidates.  it will list which coffee shops or restaurants were visited and the user can 'score' each dating candidate.

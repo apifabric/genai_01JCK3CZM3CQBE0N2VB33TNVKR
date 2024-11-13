@@ -1,0 +1,80 @@
+// Copy this text, paste to https://dbdiagram.io/d
+// Or, https://databasediagram.com/app
+// Or, view in VSCode with extension: "DBML Live Preview"
+
+Project DBML {
+  Note: '''
+Candidate: Represents dating candidates from various platforms.
+DatingPlatform: Stores information about different dating platforms.
+Favorite: Represents favorite candidates for each user.
+User: Stores user information from the dating platform.
+Interaction: Tracks all interactions between users and candidates.
+Place: Represents places visited during interactions.
+Visit: Records details of the places visited during interactions.
+'''
+}
+
+Table Candidate {
+    id INTEGER [primary key]
+    name VARCHAR 
+    platform_id INTEGER 
+    gender VARCHAR 
+    age INTEGER 
+    }
+
+Table DatingPlatform {
+    id INTEGER [primary key]
+    name VARCHAR 
+    url VARCHAR 
+    }
+
+Table Favorite {
+    id INTEGER [primary key]
+    user_id INTEGER 
+    candidate_id INTEGER 
+    notes VARCHAR 
+    added_date DATETIME 
+    }
+
+Table User {
+    id INTEGER [primary key]
+    name VARCHAR 
+    email VARCHAR 
+    date_of_birth DATE 
+    gender VARCHAR 
+    }
+
+Table Interaction {
+    id INTEGER [primary key]
+    user_id INTEGER 
+    candidate_id INTEGER 
+    interaction_date DATETIME 
+    online BOOLEAN 
+    notes VARCHAR 
+    }
+
+Table Place {
+    id INTEGER [primary key]
+    name VARCHAR 
+    Type VARCHAR 
+    address VARCHAR 
+    }
+
+Table Visit {
+    id INTEGER [primary key]
+    interaction_id INTEGER 
+    place_id INTEGER 
+    visit_date DATETIME 
+    score INTEGER 
+    }
+
+
+
+// Relationships
+    Ref: Candidate.(platform_id) < DatingPlatform.(id)
+    Ref: Favorite.(candidate_id) < Candidate.(id)
+    Ref: Favorite.(user_id) < User.(id)
+    Ref: Interaction.(candidate_id) < Candidate.(id)
+    Ref: Interaction.(user_id) < User.(id)
+    Ref: Visit.(interaction_id) < Interaction.(id)
+    Ref: Visit.(place_id) < Place.(id)

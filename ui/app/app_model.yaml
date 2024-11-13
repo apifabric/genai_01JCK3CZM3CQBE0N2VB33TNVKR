@@ -1,0 +1,340 @@
+about:
+  date: November 13, 2024 15:49:29
+  recent_changes: works with modified safrs-react-admin
+  version: 0.0.0
+api_root: '{http_type}://{swagger_host}:{port}/{api}'
+authentication: '{system-default}'
+entities:
+  Candidate:
+    columns:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+      template: text
+      type: VARCHAR
+    - name: platform_id
+      template: integer
+      type: INTEGER
+    - name: gender
+      template: text
+      type: VARCHAR
+    - name: age
+      template: integer
+      type: INTEGER
+    - name: id
+      template: integer
+      type: INTEGER
+    description: Represents dating candidates from various platforms.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: name
+    hidden: {}
+    home_template: home_template.html
+    info_list: Represents dating candidates from various platforms.
+    label: Candidate
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: tomany
+      fks:
+      - candidate_id
+      name: FavoriteList
+      resource: Favorite
+    - direction: tomany
+      fks:
+      - candidate_id
+      name: InteractionList
+      resource: Interaction
+    - direction: toone
+      fks:
+      - platform_id
+      name: platform
+      resource: DatingPlatform
+    type: Candidate
+  DatingPlatform:
+    columns:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+      template: text
+      type: VARCHAR
+    - name: url
+      template: text
+      type: VARCHAR
+    - name: id
+      template: integer
+      type: INTEGER
+    description: Stores information about different dating platforms.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: name
+    hidden: {}
+    home_template: home_template.html
+    info_list: Stores information about different dating platforms.
+    label: DatingPlatform
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: tomany
+      fks:
+      - platform_id
+      name: CandidateList
+      resource: Candidate
+    type: DatingPlatform
+  Favorite:
+    columns:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+      template: integer
+      type: INTEGER
+    - name: candidate_id
+      template: integer
+      type: INTEGER
+    - name: user_id
+      template: integer
+      type: INTEGER
+    - name: notes
+      template: text
+      type: VARCHAR
+    - name: added_date
+      type: DATETIME
+    description: Represents favorite candidates for each user.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: id
+    hidden: {}
+    home_template: home_template.html
+    info_list: Represents favorite candidates for each user.
+    label: Favorite
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: toone
+      fks:
+      - candidate_id
+      name: candidate
+      resource: Candidate
+    - direction: toone
+      fks:
+      - user_id
+      name: user
+      resource: User
+    type: Favorite
+  Interaction:
+    columns:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+      template: integer
+      type: INTEGER
+    - name: candidate_id
+      template: integer
+      type: INTEGER
+    - name: user_id
+      template: integer
+      type: INTEGER
+    - name: interaction_date
+      type: DATETIME
+    - name: online
+      required: true
+      type: Boolean
+    - name: notes
+      template: text
+      type: VARCHAR
+    description: Tracks all interactions between users and candidates.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: id
+    hidden: {}
+    home_template: home_template.html
+    info_list: Tracks all interactions between users and candidates.
+    label: Interaction
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: tomany
+      fks:
+      - interaction_id
+      name: VisitList
+      resource: Visit
+    - direction: toone
+      fks:
+      - candidate_id
+      name: candidate
+      resource: Candidate
+    - direction: toone
+      fks:
+      - user_id
+      name: user
+      resource: User
+    type: Interaction
+  Place:
+    columns:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+      template: text
+      type: VARCHAR
+    - name: Type
+      required: true
+      template: text
+      type: VARCHAR
+    - name: address
+      template: text
+      type: VARCHAR
+    - name: id
+      template: integer
+      type: INTEGER
+    description: Represents places visited during interactions.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: name
+    hidden: {}
+    home_template: home_template.html
+    info_list: Represents places visited during interactions.
+    label: Place
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: tomany
+      fks:
+      - place_id
+      name: VisitList
+      resource: Visit
+    type: Place
+  User:
+    columns:
+    - label: ' name*'
+      name: name
+      required: true
+      search: true
+      sort: true
+      template: text
+      type: VARCHAR
+    - name: email
+      required: true
+      template: text
+      type: VARCHAR
+    - name: date_of_birth
+      type: DATE
+    - name: gender
+      template: text
+      type: VARCHAR
+    - name: id
+      template: integer
+      type: INTEGER
+    description: Stores user information from the dating platform.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: name
+    hidden: {}
+    home_template: home_template.html
+    info_list: Stores user information from the dating platform.
+    label: User
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: tomany
+      fks:
+      - user_id
+      name: FavoriteList
+      resource: Favorite
+    - direction: tomany
+      fks:
+      - user_id
+      name: InteractionList
+      resource: Interaction
+    type: User
+  Visit:
+    columns:
+    - label: ' id*'
+      name: id
+      search: true
+      sort: true
+      template: integer
+      type: INTEGER
+    - name: interaction_id
+      template: integer
+      type: INTEGER
+    - name: place_id
+      template: integer
+      type: INTEGER
+    - name: visit_date
+      type: DATETIME
+    - name: score
+      template: integer
+      type: INTEGER
+    description: Records details of the places visited during interactions.
+    detail_template: detail_template.html
+    exclude: 'false'
+    favorite: id
+    hidden: {}
+    home_template: home_template.html
+    info_list: Records details of the places visited during interactions.
+    label: Visit
+    mode: tab
+    new_template: new_template.html
+    primary_key:
+    - id
+    tab_groups:
+    - direction: toone
+      fks:
+      - interaction_id
+      name: interaction
+      resource: Interaction
+    - direction: toone
+      fks:
+      - place_id
+      name: place
+      resource: Place
+    type: Visit
+settings:
+  HomeJS: /admin-app/home.js
+  max_list_columns: 8
+  style_guide:
+    applicationLocales:
+    - en
+    - es
+    currency_symbol: $
+    currency_symbol_position: left
+    date_format: LL
+    decimal_max: '1000000000'
+    decimal_min: '0'
+    decimal_separator: .
+    edit_on_mode: dblclick
+    exclude_listpicker: false
+    include_translation: false
+    keycloak_client_id: alsclient
+    keycloak_realm: kcals
+    keycloak_url: http://localhost:8080
+    locale: en
+    max_decimal_digits: '4'
+    min_decimal_digits: '2'
+    mode: tab
+    pick_style: list
+    serviceType: OntimizeEE
+    startSessionPath: /auth/login
+    style: light
+    thousand_separator: ','
+    use_keycloak: false
